@@ -16,12 +16,12 @@ pipeline {
         stage ('Docker image build and push to docker hub') {
             steps {
                 script{
-                    sh 'cp -r ../web-app@2/target .'
-                    sh 'docker build . -t dockerdivya9/web-app:$BUILD_NUMBER'
+                    sh 'sudo cp -r ../web-app@2/target .'
+                    sh 'sudo docker build . -t dockerdivya9/web-app:$BUILD_NUMBER'
                     withCredentials([string(credentialsId: 'dockerhub', variable: 'docker_password')]) {
                         sh '''
-                        docker login -u dockerdivya9 -p $docker_password
-                        docker push dockerdivya9/web-app:$BUILD_NUMBER
+                        sudo docker login -u dockerdivya9 -p $docker_password
+                        sudo docker push dockerdivya9/web-app:$BUILD_NUMBER
                         '''
                     } 
                 }
