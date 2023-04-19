@@ -5,7 +5,7 @@ pipeline {
             agent {
                 docker {
                     image 'maven'
-                     sh "echo $HOME"
+                 script{    sh "echo $HOME" }
                     args '-v $HOME/.m2:/root/.m2'
                 }
             }
