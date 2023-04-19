@@ -10,9 +10,7 @@ pipeline {
             }
             steps {
                 script {
-                    withSonarQubeEnv('Sonar-server') {
-                        sh "echo sonar"
-                    }
+                    
                   
                     sh "mvn clean install"
                 }
