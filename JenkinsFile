@@ -5,11 +5,12 @@ pipeline {
             agent {
                 docker {
                     image 'maven'
-                    sh 'echo $HOME'
+                     sh "echo $HOME"
                     args '-v $HOME/.m2:/root/.m2'
                 }
             }
             steps {
+                    
                      sh "mvn clean install"
                 }
             }
