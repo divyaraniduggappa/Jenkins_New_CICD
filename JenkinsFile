@@ -9,7 +9,7 @@ pipeline {
         stage ('Code build'){
             steps {
                      sh "echo $HOME" 
-                     sh "mvn clean install"
+                     sh "mvn -s /home/jenkins/.m2/settings.xml clean install"
                 }
             }
            
