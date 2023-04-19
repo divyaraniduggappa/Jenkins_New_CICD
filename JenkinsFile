@@ -16,7 +16,7 @@ pipeline {
         stage ('Docker image build and push to docker hub') {
             steps {
                 script{
-                    sh 'cp -r ../Java_web_app@2/target .'
+                    sh 'cp -r ../Java_web_app@2/target/ .'
                     sh 'docker build . -t dockerdivya9/web-app:$BUILD_NUMBER'
                     withCredentials([string(credentialsId: 'dockerhub', variable: 'docker_password')]) {
                         sh '''
