@@ -1,11 +1,59 @@
-pipeline{
-agent any
-stages{
-stage('GitCheckout'){
-steps{
-sh 'echo git passed'
-}
-}
+pipeline {
+    agent any
+    stages {
+        stage ('Code build and Static Code Analysis'){
+            agent {
+                docker {
+                    image 'maven'
+                    args '-v $HOME/.m2:/root/.m2'
+                }
+            }
+            steps {
+                     sh "mvn clean install"
+                }
+            }
+        }
+        stage('Static code analysis'){
+        sh 'echo "Analysis finished"'
+        }
+        stage ('Docker image build and push to docker hub') {
+            steps {
+                script{
+                    sh 'cp -r ../web-app@2/target .'
+                    sh 'docker build . -t dockerdivya9/web-app:$BUILD_NUMBER'
+                    withCredentials([string(credentialsId: 'dockerhub', variable: 'docker_password')]) {
+                        sh '''
+                        docker login -u dockerdivya9 -p $docker_password
+                        docker push dockerdivya9/web-app:$BUILD_NUMBER
+                        '''
+                    } 
+                }
+            }
+        }
+        stage ('update deployment file for GitOps') {
+            environment {
+                GITHUB_USER = "divyaraniduggappa"
+            }
+
+            steps {
+                withCredentials([string(credentialsId: 'GITHUB_TOKEN', variable: 'GITHUB_TOKEN')]) {
+                    sh '''
+                    cat deployment.yaml
+                    sed -i "s/docker_tag/$BUILD_NUMBER/" deployment.yaml
+                    cat deployment.yaml
+                    git clone https://github.com/divyaraniduggappa/Jenkins_New_CICD.git
+                    cp deployment.yaml Jenkins_New_CICD/yaml-manifest/
+                    cd Jenkins_New_CICD/yaml-manifest/
+                    git config user.name ${GITHUB_USER}
+                    git config user.email ${GITHUB_USER}@gmail.com
+                    git add deployment.yaml
+                    git commit -m "updated deployment file with ${BUILD_NUMBER}"
+                    git push https://${GITHUB_TOKEN}@github.com/${GITHUB_USER}/Jenkins_New_CICD HEAD:main
+                    cd ../../ && rm -rf Jenkins_New_CICD
+                    '''
+                }
+            }
+        }
 
 
 }}
