@@ -14,7 +14,9 @@ pipeline {
             }
         
         stage('Static code analysis'){
+        steps{
         sh 'echo "Analysis finished"'
+        }
         }
         stage ('Docker image build and push to docker hub') {
             steps {
