@@ -12,7 +12,7 @@ pipeline {
                       sh "mvn clean install"
                 }
             }
-        }
+        
         stage ('Docker image build and push to docker hub') {
             steps {
                 script{
@@ -52,6 +52,6 @@ pipeline {
             }
         
 
-
+}
 }
 }
