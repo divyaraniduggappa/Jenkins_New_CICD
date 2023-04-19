@@ -9,7 +9,7 @@ pipeline {
         stage ('Code build and Static Code Analysis'){
         steps{
                           
-                      sh "mvn clean package"
+                      sh "mvn clean install"
                 }
             }
         
