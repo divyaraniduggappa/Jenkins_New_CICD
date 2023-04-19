@@ -1,23 +1,22 @@
 pipeline {
-    agent {
-        docker {
-            image 'maven'
-            args '-v $HOME/.m2:/root/.m2'
-        }
-    }
+    agent any
     stages {
-        stage ('Code build'){
-            steps {
-                     sh "/usr/share/maven/bin/mvn clean install"
-                     
+        stage ('Code build and Static Code Analysis'){
+            agent {
+                docker {
+                    image 'maven'
+                    args '-v $HOME/.m2:/root/.m2'
                 }
             }
-           
-        
-        stage('Static code analysis'){
-        steps{
-        sh 'echo "Analysis finished"'
-        }
+            steps {
+                script {
+                    withSonarQubeEnv('Sonar-server') {
+                        sh "echo sonar"
+                    }
+                  
+                    sh "mvn clean install"
+                }
+            }
         }
         stage ('Docker image build and push to docker hub') {
             steps {
